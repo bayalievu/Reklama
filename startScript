@@ -1,0 +1,3 @@
+
+exec /home/monitor/Workspace/PyMusic/startTtserver.sh &
+exec /home/monitor/Workspace/PyMusic/startSolr.sh &
