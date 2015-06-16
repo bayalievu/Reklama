@@ -81,7 +81,7 @@ def process_file(absoluteFilename,c):
 	
 	try:
 		#Insert into melody table
-	   	db.execute("""INSERT INTO reklama(track_id,company,name,filename,length,language,date_added) VALUES (%s,%s,%s,%s,%s,%s,%s)""",(track_id,company_id,name,absoluteFilename,length,language,getNowDate()))
+	   	db.execute("""INSERT INTO reklama(track_id,company,name,filename,length,language,date_added,status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",(track_id,company_id,name,absoluteFilename,length,language,getNowDate(),'Y'))
 	   	logfile.write("Inserted track to database "+track_id+'\n')
 	   	conn.commit()
 		

@@ -41,7 +41,7 @@ CREATE TABLE `reklama` (
   `date_added` date default null,
   `date_start` date default null,
   `date_end` date default null,
-  `always`   char(1) DEFAULT NULL,
+  `status`   char(1) DEFAULT NULL,
   `filename` varchar(2048) CHARACTER SET utf8 DEFAULT NULL,
   `length` int(11) default null,
   PRIMARY KEY (`id`),
