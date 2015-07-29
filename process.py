@@ -5,7 +5,7 @@ import subprocess32
 from transliterate import translit
 from glob import glob
 import simplejson as json
-workspace = "/home/ulan/"
+workspace = "/home/monitor/Reklama/"
 sys.path.insert(0, workspace + "echoprint-server/API")
 import fp
 import time
@@ -76,7 +76,7 @@ def process_file(absoluteFilename,c):
 	track_id =code["track_id"]
 	length = code["length"]
 	
-	conn = MySQLdb.connect(host= "localhost",user="root", passwd="123", db="reklama",charset='utf8')
+	conn = MySQLdb.connect(host= "localhost",user="root", passwd="ulut123", db="reklama",charset='utf8')
 	db = conn.cursor()
 	
 	try:
@@ -97,7 +97,7 @@ def process_file(absoluteFilename,c):
 
 
 def addCompanyToDb(company):
-	conn = MySQLdb.connect(host= "localhost",user="root", passwd="123", db="reklama",charset='utf8')
+	conn = MySQLdb.connect(host= "localhost",user="root", passwd="ulut123", db="reklama",charset='utf8')
 	db = conn.cursor()
 	company_id = None
 	
@@ -119,7 +119,7 @@ def addCompanyToDb(company):
 	return company_id
 
 def getCompanies():
-	conn = MySQLdb.connect(host= "localhost",user="root", passwd="123", db="reklama",charset='utf8')
+	conn = MySQLdb.connect(host= "localhost",user="root", passwd="ulut123", db="reklama",charset='utf8')
         db = conn.cursor()
 
         sql = "SELECT * FROM company"
