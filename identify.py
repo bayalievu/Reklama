@@ -17,8 +17,8 @@ import simplejson as json
 import simplejson.scanner
 
 time_shift = 5
-min_duration = 20
-max_duration = 40
+min_duration = 5
+max_duration = 20
 last_tracks = collections.deque(maxlen=5)
 
 def codegen(file,duration,start=0):
@@ -57,8 +57,8 @@ def process_file(filename,length):
 		last_tracks.append(track_id)
 		global last_known
 		#Insert tracks only once
-		if ((last_known == None) or (last_known != track_id)) and moreThanMatchesInLastTracks(track_id,2):
-			last_known = track_id
+		if ((last_known == None or last_known[0] != track_id) and moreThanMatchesInLastTracks(track_id,1)) or (moreThanMatchesInLastTracks(track_id,3) and moreThan2MinutesDifference(getNowTime())):
+			last_known = (track_id,getNowTime())
                 	try:
 				db = conn.cursor()
                         	db.execute("""INSERT INTO played_reklama(track_id,radio,date_played,time_played,radio_id,length,filename) VALUES (%s,%s,%s,%s,%s,%s,%s)""",(track_id,radio,getNowDate(),getNowTime(),radio_id,length,filename))
@@ -75,12 +75,24 @@ def process_file(filename,length):
 		conn.close()
 		return -1
 
+def convertTimeToMinutes(t):
+        (h, m, s) = str(t).split(':')
+        result = int(h) * 60 + int(m)
+        return result
+
 def moreThanMatchesInLastTracks(track,match):
         c = 0
         for x in last_tracks:
                 if x == track:
                         c = c + 1
         return c > match
+
+def moreThan2MinutesDifference(t):
+	difference =  convertTimeToMinutes(t) - convertTimeToMinutes(last_known[1]) 
+	if difference > 2 or difference < 0:
+		return True
+	else:
+		return False
 
 def getNowTime():
        return time.strftime('%H:%M:%S')
@@ -125,13 +137,9 @@ if __name__ == "__main__":
 						big_file.write(x)
 					big_file.close()
 				
-					try:		
-						if process_file(merged_file,i*time_shift) != 0:
-							os.remove(merged_file)
+					if process_file(merged_file,i*time_shift) != 0:
+						os.remove(merged_file)
 						
-					except IOError:
-						logfile.write(getNowDateTime()+":Unexpected error:" + str(traceback.format_exc()))
-				
 	except:
     		logfile.write(getNowDateTime()+":Unexpected error:" + str(traceback.format_exc()))
     		raise

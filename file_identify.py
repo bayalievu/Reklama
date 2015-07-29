@@ -1,4 +1,4 @@
-workspace = "/home/monitor/Workspace/"
+workspace = "/home/ulan/"
 import sys
 sys.path.insert(0, workspace +"echoprint-server/API")
 import MySQLdb
@@ -64,9 +64,9 @@ def process_file(filename,t):
                         last=track_id
 			mytime = time + datetime.timedelta(seconds=t)
 			
-			conn = MySQLdb.connect(host= "localhost",user="root", passwd="ulut123", db="pymusic",charset='utf8')
+			conn = MySQLdb.connect(host= "localhost",user="root", passwd="123", db="reklama",charset='utf8')
 			db = conn.cursor()
-                        db.execute("""INSERT INTO test_played_melody(track_id,radio,date_played,time_played,radio_id) VALUES (%s,%s,%s,%s,%s)""",(track_id,radio,date,mytime.time(),radio_id))
+                        db.execute("""INSERT INTO played_reklama(track_id,radio,date_played,time_played,radio_id) VALUES (%s,%s,%s,%s,%s)""",(track_id,radio,date,mytime.time(),radio_id))
                         conn.commit()
                 	db.close()
 			conn.close()
@@ -94,17 +94,17 @@ if __name__ == "__main__":
 	
         segment = AudioSegment.from_mp3(filename)
 
-        one_minute = part_length * 1000
+        one_part = part_length * 1000
         length = len(segment)
-        parts = length/one_minute
+        parts = length/one_part
 			
         for i in range(parts):
-                part = segment[i*one_minute:(i+1)*one_minute]
-                part.export(workspace+"PyMusic/missed/"+"%09d"%i+".mp3", format="mp3",bitrate="80k")
+                part = segment[i*one_part:(i+1)*one_part]
+                part.export(workspace+"Reklama/missed/"+"%09d"%i+".mp3", format="mp3",bitrate="80k")
 			
 	t = 0
         # Process files sorted by modified time
-        files = sorted(glob(workspace+'PyMusic/missed/*.mp3'))
+        files = sorted(glob(workspace+'Reklama/missed/*.mp3'))
         print "Number of files: "+ str(len(files))
         for filename in files:
                 process_file(filename,t)
