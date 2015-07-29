@@ -1,4 +1,4 @@
-workspace = "/home/ulan/"
+workspace = "/home/monitor/Reklama/"
 import sys
 sys.path.insert(0, workspace+"echoprint-server/API")
 import MySQLdb
@@ -16,9 +16,9 @@ codegen_path = os.path.abspath(workspace + "echoprint-codegen/echoprint-codegen"
 import simplejson as json
 import simplejson.scanner
 
-time_shift = 5
-min_duration = 5
-max_duration = 20
+time_shift = 2
+min_duration = 30
+max_duration = 30
 last_tracks = collections.deque(maxlen=5)
 
 def codegen(file,duration,start=0):
@@ -49,7 +49,7 @@ def process_file(filename,length):
         decoded = fp.decode_code_string(codes[0]["code"])
         result = fp.best_match_for_query(decoded)
 	
-	conn = MySQLdb.connect(host= "localhost",user="root", passwd="123", db="reklama",charset='utf8')
+	conn = MySQLdb.connect(host= "localhost",user="root", passwd="ulut123", db="reklama",charset='utf8')
 	
         if result.TRID:
                 #Melody is recognized

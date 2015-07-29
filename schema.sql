@@ -10,26 +10,6 @@ CREATE TABLE `company` (
 ) ;
 
 
-DROP TABLE IF EXISTS `fingerprint`;
-CREATE TABLE `fingerprint` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `fp` varchar(32000) DEFAULT NULL,
-  `radio` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `date_played` date DEFAULT NULL,
-  `time_played` time DEFAULT NULL,
-  `time_identified` datetime DEFAULT NULL,
-  `status` char(1) DEFAULT NULL,
-  `radio_id` int(11) DEFAULT NULL,
-  `track_id` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fp_radio_index` (`radio`),
-  KEY `fp_time_played_index` (`time_played`),
-  KEY `fp_date_played_index` (`date_played`),
-  KEY `fp_radio_id_index` (`radio_id`),
-  KEY `fp_track_id_index` (`track_id`)
-);
-
-
 DROP TABLE IF EXISTS `reklama`;
 CREATE TABLE `reklama` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
