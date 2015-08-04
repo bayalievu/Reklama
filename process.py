@@ -6,7 +6,8 @@ from transliterate import translit
 from glob import glob
 import simplejson as json
 workspace = "/home/monitor/Reklama/"
-sys.path.insert(0, workspace + "echoprint-server/API")
+import sys
+sys.path.insert(0, workspace+"echoprint-server/API")
 import fp
 import time
 codegen_path = os.path.abspath(workspace+"echoprint-codegen/echoprint-codegen")
@@ -80,9 +81,9 @@ def process_file(absoluteFilename,c):
 	db = conn.cursor()
 	
 	try:
-		#Insert into melody table
-	   	db.execute("""INSERT INTO reklama(track_id,company_id,name,filename,length,language,date_added,status,company) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(track_id,company_id,name,absoluteFilename,length,language,getNowDate(),'Y',company))
-	   	logfile.write("Inserted track to database "+track_id+'\n')
+		#Insert into reklama table
+	   	db.execute("""INSERT INTO reklama(track_id,company_id,name,filename,length,language,date_added,status,company_name) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(track_id,company_id,name,absoluteFilename,length,language.decode("utf-8"),getNowDate(),'Y',company.decode("utf-8")))
+	   	logfile.write("Inserted reklama to database "+track_id+'\n')
 	   	conn.commit()
 		
 		#Save fingerprint in Solr

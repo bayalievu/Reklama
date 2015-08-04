@@ -1,3 +1,2 @@
-
-exec /home/monitor/Workspace/PyMusic/startTtserver.sh &
-exec /home/monitor/Workspace/PyMusic/startSolr.sh &
+exec /home/monitor/Reklama/Reklama/scripts/startTtserver.sh &
+exec /home/monitor/Reklama/Reklama/scripts/startSolr.sh &

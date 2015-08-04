@@ -1,11 +1,11 @@
 workspace = "/home/monitor/Reklama/"
-import sys
-sys.path.insert(0, workspace+"echoprint-server/API")
 import MySQLdb
 import os
 import subprocess32
 import time    
 from glob import glob
+import sys
+sys.path.insert(0, workspace+"echoprint-server/API")
 import fp
 import traceback
 import collections
@@ -17,9 +17,8 @@ import simplejson as json
 import simplejson.scanner
 
 time_shift = 2
-min_duration = 30
-max_duration = 30
-last_tracks = collections.deque(maxlen=5)
+min_duration = 28
+max_duration = 28
 
 def codegen(file,duration,start=0):
     	proclist = [codegen_path, os.path.abspath(file), "%d" % start, "%d" % duration]
@@ -54,11 +53,11 @@ def process_file(filename,length):
         if result.TRID:
                 #Melody is recognized
                 track_id = result.TRID
-		last_tracks.append(track_id)
-		global last_known
+		global last_track,last_time
 		#Insert tracks only once
-		if ((last_known == None or last_known[0] != track_id) and moreThanMatchesInLastTracks(track_id,1)) or (moreThanMatchesInLastTracks(track_id,3) and moreThan2MinutesDifference(getNowTime())):
-			last_known = (track_id,getNowTime())
+		if (last_track == None or moreThan2MinutesDifference(getNowTime(),last_time) or last_track != track_id):
+			last_track = track_id
+			last_time = getNowTime()
                 	try:
 				db = conn.cursor()
                         	db.execute("""INSERT INTO played_reklama(track_id,radio,date_played,time_played,radio_id,length,filename) VALUES (%s,%s,%s,%s,%s,%s,%s)""",(track_id,radio,getNowDate(),getNowTime(),radio_id,length,filename))
@@ -80,15 +79,8 @@ def convertTimeToMinutes(t):
         result = int(h) * 60 + int(m)
         return result
 
-def moreThanMatchesInLastTracks(track,match):
-        c = 0
-        for x in last_tracks:
-                if x == track:
-                        c = c + 1
-        return c > match
-
-def moreThan2MinutesDifference(t):
-	difference =  convertTimeToMinutes(t) - convertTimeToMinutes(last_known[1]) 
+def moreThan2MinutesDifference(t,last_time):
+	difference =  convertTimeToMinutes(t) - convertTimeToMinutes(last_time) 
 	if difference > 2 or difference < 0:
 		return True
 	else:
@@ -111,34 +103,30 @@ if __name__ == "__main__":
         radio = sys.argv[1]
 	radio_id = sys.argv[2]
         stream = sys.argv[3]
-	last_known = None
+	last_track = None
+	last_time = None
 
 	logfile = open(workspace+"Reklama/logs/radio"+radio+"ReklamaIdentify"+getNowDateTime(), 'w',1)
 	
-	all_files = []
-	for i in range(min_duration/time_shift,max_duration/time_shift):
-		all_files.append(collections.deque(maxlen=i))
-	
 	try:	
+		number_files = max_duration/time_shift
+		files = collections.deque(maxlen=number_files)
 	   	url=urllib2.urlopen(stream)
 		while True:
-			#Read 5 seconds from 80Kb/s(10KB/s) stream (This number should change if stream bandwidth changes)
+			#Read 2 seconds from 80Kb/s(10KB/s) stream (This number should change if stream bandwidth changes)
                         f = url.read(1024*10*time_shift)
-			
-			for i in range(min_duration/time_shift,max_duration/time_shift):
-				files = all_files[i-min_duration/time_shift]
-				files.append(f)				
+			files.append(f)				
 	
-				if (len(files) == i):
-					merged_file = workspace+"Reklama/wavs/merged"+radio+getNowDateTime()+"_"+str(i*time_shift)+'.mp3'
-                        		big_file=open(merged_file, 'wb')
+			if (len(files) == number_files):
+				merged_file = workspace+"Reklama/wavs/merged"+radio+getNowDateTime()+"_"+str(time_shift)+'.mp3'
+                        	big_file=open(merged_file, 'wb')
 				
-					for x in files:
-						big_file.write(x)
-					big_file.close()
+				for x in files:
+					big_file.write(x)
+				big_file.close()
 				
-					if process_file(merged_file,i*time_shift) != 0:
-						os.remove(merged_file)
+				if process_file(merged_file,max_duration) != 0:
+					os.remove(merged_file)
 						
 	except:
     		logfile.write(getNowDateTime()+":Unexpected error:" + str(traceback.format_exc()))
