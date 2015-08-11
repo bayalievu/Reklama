@@ -125,8 +125,12 @@ if __name__ == "__main__":
 					big_file.write(x)
 				big_file.close()
 				
-				if process_file(merged_file,max_duration) != 0:
-					os.remove(merged_file)
+				try:
+					if process_file(merged_file,max_duration) != 0:
+						os.remove(merged_file)
+				except IOError:
+                                	logfile.write(getNowDateTime()+":Unexpected error:" + str(traceback.format_exc()))
+
 						
 	except:
     		logfile.write(getNowDateTime()+":Unexpected error:" + str(traceback.format_exc()))
