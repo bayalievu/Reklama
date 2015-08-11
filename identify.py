@@ -16,9 +16,10 @@ codegen_path = os.path.abspath(workspace + "echoprint-codegen/echoprint-codegen"
 import simplejson as json
 import simplejson.scanner
 
-time_shift = 2
-min_duration = 28
-max_duration = 28
+time_shift = 3
+max_duration = 30
+
+last_identified_tracks = collections.deque(maxlen=2*max_duration/time_shift)
 
 def codegen(file,duration,start=0):
     	proclist = [codegen_path, os.path.abspath(file), "%d" % start, "%d" % duration]
@@ -53,9 +54,10 @@ def process_file(filename,length):
         if result.TRID:
                 #Melody is recognized
                 track_id = result.TRID
+		last_identified_tracks.append((track_id,getNowTime()))
 		global last_track,last_time
 		#Insert tracks only once
-		if (last_track == None or moreThan2MinutesDifference(getNowTime(),last_time) or last_track != track_id):
+		if (last_track == None or moreThan2MinutesDifference(getNowTime(),last_time) or last_track != track_id) and trackIdentified2TimesInLast2Minutes(track_id):
 			last_track = track_id
 			last_time = getNowTime()
                 	try:
@@ -82,6 +84,19 @@ def convertTimeToMinutes(t):
 def moreThan2MinutesDifference(t,last_time):
 	difference =  convertTimeToMinutes(t) - convertTimeToMinutes(last_time) 
 	if difference > 2 or difference < 0:
+		return True
+	else:
+		return False
+
+def trackIdentified2TimesInLast2Minutes(track_id):
+	currentTime = convertTimeToMinutes(getNowTime())
+	count = 0
+	for x in last_identified_tracks:
+		t = convertTimeToMinutes(x[1])
+		if t == currentTime or t == currentTime - 1:
+			count = count + 1
+	
+	if count > 1:
 		return True
 	else:
 		return False
