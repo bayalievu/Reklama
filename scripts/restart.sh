@@ -1,4 +1,4 @@
-sleep 3
+sleep 2
 
 if ! ps -ef | grep /home/monitor/Reklama/Reklama/identify.py | grep "MinKiyal"; then
         DATE=`date +%Y-%m-%d_%H:%M:%S`
